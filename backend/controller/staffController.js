@@ -1,14 +1,68 @@
 const Staff = require("../models/StaffModel.js");
 const Application = require("../models/ApplicationModel.js");
+const bcrypt = require("bcryptjs");
+
+//registration staff
+exports.registrationStaff = async (req, res) => {
+    try {
+        const {
+            staffName,
+            staffId,
+            mobile,
+            role,
+            classTeacherOf,
+            department,
+            password,
+        } = req.body;
+
+        // check if staff already exists
+        const existingStaff = await Staff.findOne({ staffId });
+        if (existingStaff) {
+            return res.status(400).json({ message: "Staff already registered" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const staff = await Staff.create({
+            staffName,
+            staffId,
+            mobile,
+            role,
+            classTeacherOf,
+            department,
+            password: hashedPassword,
+        });
+
+        res.status(201).json({
+            message: "Staff registered successfully",
+            staff,
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
 // login staff
 exports.loginStaff = async (req, res) => {
     const { staffId, password } = req.body;
     try {
-        const staff = await Staff.findOne({ staffId, password });
+        const staff = await Staff.findOne({ staffId });
         if (!staff) return res.status(400).json({ message: "Invalid credentials" });
-
-        res.status(200).json({ message: "Login successful", staff });
+        const isMatch = await bcrypt.compare(password, staff.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+        res.status(200).json({
+            message: "Login successful",
+            staff:{
+                staffName:staff.staffName,
+                staffId:staff.staffId,
+                mobile:staff.mobile,
+                role:staff.role,
+                department:staff.department
+            }
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

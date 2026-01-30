@@ -21,14 +21,8 @@ const staffSchema = new mongoose.Schema(
 
         role: {
             type: String,
-            enum: ["teacher", "dean"],
+            enum: ["teacherapplicationchecker", "dean"],
             required: true,
-        },
-
-        classTeacherOf: {
-            classDepartment: {
-                type: String,
-            },
         },
 
         department: {
