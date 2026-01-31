@@ -150,7 +150,8 @@ const Application = () => {
                 <th>Reason</th>
                 <th>From</th>
                 <th>To</th>
-                <th>Status</th>
+                <th>Teacher Status</th>
+                <th>Dean Status</th>
                 <th>Teacher Remark</th>
                 <th>Dean Remark</th>
               </tr>
@@ -162,7 +163,8 @@ const Application = () => {
                   <td>{app.reason}</td>
                   <td>{new Date(app.fromDate).toLocaleDateString()}</td>
                   <td>{new Date(app.toDate).toLocaleDateString()}</td>
-                  <td>{app.status}</td>
+                  <td>{app.teacherstatus}</td>
+                  <td>{app.deanstatus}</td>
                   <td>{app.teacherRemark || "-"}</td>
                   <td>{app.deanRemark || "-"}</td>
                 </tr>
