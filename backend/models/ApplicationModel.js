@@ -28,17 +28,23 @@ const applicationSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-
-    status: {
+    teacherstatus: {
       type: String,
       enum: [
         "pending_teacher",
         "rejected_by_teacher",
-        "pending_dean",
-        "approved",
-        "rejected_by_dean",
+        "approved"
       ],
       default: "pending_teacher",
+    },
+    deanstatus: {
+      type:String,
+      enum:[
+        "pending_dean",
+        "rejected_by_dean",
+        "approved"
+      ],
+      default:"pending_dean"
     },
 
     teacherRemark: {

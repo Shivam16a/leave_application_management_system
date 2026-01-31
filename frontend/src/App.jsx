@@ -1,14 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import Home from "./components/Home"
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Login from "./pages/Login";
+import PrivateRoute from "./context/PrivateRoute";
+import Application from "./pages/Application";
 
 const App = () => {
   return <>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={
+        <PrivateRoute>
+          <Home />
+        </PrivateRoute>
+      } />
+      <Route path="/application" element={
+        <PrivateRoute>
+          <Application />
+        </PrivateRoute>
+      }/>
+      <Route path="/login" element={<Login />} />
+    </Routes>
   </>
 }
 
