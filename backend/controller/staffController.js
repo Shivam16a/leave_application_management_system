@@ -55,12 +55,13 @@ exports.loginStaff = async (req, res) => {
         }
         res.status(200).json({
             message: "Login successful",
-            staff:{
-                staffName:staff.staffName,
-                staffId:staff.staffId,
-                mobile:staff.mobile,
-                role:staff.role,
-                department:staff.department
+            staff: {
+                staffmongoId:staff._id,
+                staffName: staff.staffName,
+                staffId: staff.staffId,
+                mobile: staff.mobile,
+                role: staff.role,
+                department: staff.department
             }
         });
     } catch (err) {
@@ -71,17 +72,21 @@ exports.loginStaff = async (req, res) => {
 // get pending applications for teacher/dean
 exports.getPendingApplications = async (req, res) => {
     try {
-        const staff = await Staff.findById(req.params.staffId);
+        const staff = await Staff.findOne({ staffId: req.params.staffId });
         if (!staff) return res.status(404).json({ message: "Staff not found" });
 
-        let applications;
-        if (staff.role === "teacher") {
+        let applications = [];
+
+        if (staff.role === "teacherapplicationchecker") {
             applications = await Application.find({
-                status: "pending_teacher"
+                teacherstatus: "pending_teacher",
             }).populate("studentId");
-        } else if (staff.role === "dean") {
+        }
+
+        if (staff.role === "dean") {
             applications = await Application.find({
-                status: "pending_dean"
+                teacherstatus: "approved",
+                deanstatus: "pending_dean",
             }).populate("studentId");
         }
 
@@ -91,6 +96,7 @@ exports.getPendingApplications = async (req, res) => {
     }
 };
 
+
 // approve application
 exports.approveApplication = async (req, res) => {
     try {
@@ -99,11 +105,13 @@ exports.approveApplication = async (req, res) => {
 
         const staff = await Staff.findById(req.body.staffId);
 
-        if (staff.role === "teacher") {
-            app.status = "pending_dean";
+        if (staff.role === "teacherapplicationchecker") {
+            app.teacherstatus = "approved";
             app.teacherRemark = req.body.remark || "";
-        } else if (staff.role === "dean") {
-            app.status = "approved";
+        }
+
+        if (staff.role === "dean") {
+            app.deanstatus = "approved";
             app.deanRemark = req.body.remark || "";
         }
 
@@ -114,6 +122,7 @@ exports.approveApplication = async (req, res) => {
     }
 };
 
+
 // reject application
 exports.rejectApplication = async (req, res) => {
     try {
@@ -122,11 +131,13 @@ exports.rejectApplication = async (req, res) => {
 
         const staff = await Staff.findById(req.body.staffId);
 
-        if (staff.role === "teacher") {
-            app.status = "rejected_by_teacher";
+        if (staff.role === "teacherapplicationchecker") {
+            app.teacherstatus = "rejected_by_teacher";
             app.teacherRemark = req.body.remark || "";
-        } else if (staff.role === "dean") {
-            app.status = "rejected_by_dean";
+        }
+
+        if (staff.role === "dean") {
+            app.deanstatus = "rejected_by_dean";
             app.deanRemark = req.body.remark || "";
         }
 

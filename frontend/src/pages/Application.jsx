@@ -86,6 +86,7 @@ const Application = () => {
                             type="text"
                             className="form-control"
                             name="subject"
+                            autoComplete="off"
                             value={formData.subject}
                             onChange={handleChange}
                             required

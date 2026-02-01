@@ -26,7 +26,6 @@ const Login = () => {
 
     const url = role === "student" ? studenturl : staffurl;
 
-    // 🔥 Backend ke hisaab se payload
     const payload =
       role === "student"
         ? { prn: formData.prn, password: formData.password }
@@ -86,6 +85,7 @@ const Login = () => {
                 type="text"
                 className="form-control"
                 name={role === "student" ? "prn" : "staffId"}
+                autoComplete="off"
                 placeholder={`Enter ${role === "student" ? "PRN" : "Staff ID"}`}
                 value={
                   role === "student"
@@ -109,6 +109,7 @@ const Login = () => {
                 type="password"
                 className="form-control"
                 name="password"
+                autoComplete="off"
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={handleChange}

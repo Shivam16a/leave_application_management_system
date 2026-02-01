@@ -2,6 +2,7 @@ import React from 'react'
 import { useAuth } from '../context/Authcontext';
 import { useNavigate } from 'react-router-dom';
 import Application from '../pages/Application';
+import ShowApplication from '../pages/ShowApplication';
 
 
 const Navbar = () => {
@@ -66,7 +67,9 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
-        <Application/>
+
+        {user.role === "student" ? (<Application/>):(<ShowApplication/>)}
+        
     </>
 }
 
