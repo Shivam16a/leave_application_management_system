@@ -4,15 +4,13 @@ import axios from "axios";
 const ShowApplication = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [remarks, setRemarks] = useState({}); // store temporary remark for each application
 
-  // Logged-in staff
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Fetch pending applications
   const fetchApplications = async () => {
     try {
       if (!user?.staffId) return;
-
       const res = await axios.get(
         `http://localhost:5500/api/staff/${user.staffId}/pending`
       );
@@ -28,32 +26,29 @@ const ShowApplication = () => {
     fetchApplications();
   }, []);
 
-  // Approve handler
-  const handleApprove = async (applicationId) => {
+  const handleApprove = async (appId) => {
     try {
       await axios.post(
-        `http://localhost:5500/api/staff/application/${applicationId}/approve`,
-        { staffId: user.staffId }
+        `http://localhost:5500/api/staff/application/${appId}/approve`,
+        { staffId: user.staffId, remark: remarks[appId] || "" }
       );
+      setRemarks((prev) => ({ ...prev, [appId]: "" }));
       fetchApplications();
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  // Reject handler
-  const handleReject = async (applicationId) => {
-    const remark = prompt("Enter rejection reason:");
-    if (!remark) return;
-
+  const handleReject = async (appId) => {
     try {
       await axios.post(
-        `http://localhost:5500/api/staff/application/${applicationId}/reject`,
-        { staffId: user.staffId, remark }
+        `http://localhost:5500/api/staff/application/${appId}/reject`,
+        { staffId: user.staffId, remark: remarks[appId] || "" }
       );
+      setRemarks((prev) => ({ ...prev, [appId]: "" }));
       fetchApplications();
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -81,9 +76,8 @@ const ShowApplication = () => {
         <div className="row">
           {applications.map((app) => (
             <div className="col-md-6 mb-4" key={app._id}>
-              <div className="card shadow-sm  h-100">
-
-                {/* Card Header */}
+              <div className="card shadow-sm h-100">
+                {/* Header */}
                 <div className="card-header bg-light">
                   <strong>
                     <i className="fa-solid fa-user-graduate me-2"></i>
@@ -94,7 +88,7 @@ const ShowApplication = () => {
                   </span>
                 </div>
 
-                {/* Card Body - Letter Style */}
+                {/* Body */}
                 <div className="card-body" style={{ fontFamily: "serif" }}>
                   <p>
                     <b>To,</b><br />
@@ -128,30 +122,33 @@ const ShowApplication = () => {
                     <b>{app.studentId?.username}</b>
                   </p>
 
-                  {/* Remarks Section */}
+                  {/* Teacher + Dean Remarks */}
                   {(app.teacherRemark || app.deanRemark) && (
                     <div className="mt-4 p-3 border rounded bg-light">
                       <h6 className="mb-2">
                         <i className="fa-solid fa-pen-to-square me-2"></i>
                         Remarks
                       </h6>
-
-                      {app.teacherRemark && (
-                        <p className="mb-1">
-                          <b>Teacher:</b> {app.teacherRemark}
-                        </p>
-                      )}
-
-                      {app.deanRemark && (
-                        <p className="mb-0">
-                          <b>Dean:</b> {app.deanRemark}
-                        </p>
-                      )}
+                      {app.teacherRemark && <p><b>Teacher:</b> {app.teacherRemark}</p>}
+                      {app.deanRemark && <p><b>Dean:</b> {app.deanRemark}</p>}
                     </div>
                   )}
+
+                  {/* Input for remark */}
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm fw-bold fs-4"
+                      placeholder="Enter remark:(eg:- Approve for a day)"
+                      value={remarks[app._id] || ""}
+                      onChange={(e) =>
+                        setRemarks((prev) => ({ ...prev, [app._id]: e.target.value }))
+                      }
+                    />
+                  </div>
                 </div>
 
-                {/* Card Footer - Approve / Reject */}
+                {/* Footer - Approve / Reject */}
                 <div className="card-footer d-flex justify-content-between">
                   <button
                     className="btn btn-success btn-sm"
@@ -166,7 +163,6 @@ const ShowApplication = () => {
                     <i className="fa-solid fa-xmark me-1"></i> Reject
                   </button>
                 </div>
-
               </div>
             </div>
           ))}

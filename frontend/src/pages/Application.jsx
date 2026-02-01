@@ -30,52 +30,57 @@ const Application = () => {
 
     // ✍️ Handle input changes
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     // 📤 Submit new application
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!user?.studentId) {
-            alert("User not found. Please login first.");
-            return;
-        }
-
         const { subject, reason, fromDate, toDate } = formData;
         if (!subject || !reason || !fromDate || !toDate) {
             alert("Please fill all fields.");
             return;
         }
 
-        const payload = {
-            studentId: user.studentId, // ✅ backend ke schema ke liye
-            subject,
-            reason,
-            fromDate,
-            toDate,
-        };
-
         try {
-            const res = await axios.post(
-                "http://localhost:5500/api/application/submit",
-                payload
-            );
+            await axios.post("http://localhost:5500/api/application/submit", {
+                studentId: user.studentId,
+                subject,
+                reason,
+                fromDate,
+                toDate,
+            });
             alert("Application submitted successfully!");
             setFormData({ subject: "", reason: "", fromDate: "", toDate: "" });
-            fetchApplications(); // Refresh the list after submit
+            fetchApplications();
         } catch (err) {
             console.error(err);
             alert(err.response?.data?.message || "Something went wrong");
         }
     };
 
+    // 🔹 Helper function for badge color
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case "pending_teacher":
+            case "pending_dean":
+                return "badge bg-warning text-dark";
+            case "approved":
+                return "badge bg-success text-white";
+            case "rejected_by_teacher":
+            case "rejected_by_dean":
+                return "badge bg-danger text-white";
+            default:
+                return "badge bg-secondary";
+        }
+    };
+
     return (
         <div className="container mt-4">
-            <h3 className="mb-4">📄 Leave Application</h3>
+            <h3 className="mb-4 text-center">
+                <i className="fa-solid fa-file-circle-check me-2 text-primary"></i>
+                Leave Applications
+            </h3>
 
             {/* 📝 Application Form */}
             <div className="card p-4 mb-4 shadow-sm">
@@ -86,7 +91,6 @@ const Application = () => {
                             type="text"
                             className="form-control"
                             name="subject"
-                            autoComplete="off"
                             value={formData.subject}
                             onChange={handleChange}
                             required
@@ -117,7 +121,6 @@ const Application = () => {
                                 required
                             />
                         </div>
-
                         <div className="col-md-6 mb-3">
                             <label className="form-label">To Date</label>
                             <input
@@ -137,57 +140,94 @@ const Application = () => {
                 </form>
             </div>
 
-            {/* 📋 Application List */}
-            <div className="card p-4 shadow-sm">
-                <h5 className="mb-3">📂 My Applications</h5>
-
+            {/* 📄 Applications in Letter Format */}
+            <div className="row">
                 {applications.length === 0 ? (
-                    <p>No applications submitted yet.</p>
+                    <p className="text-center">No applications submitted yet.</p>
                 ) : (
-                    <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Subject</th>
-                                <th>Reason</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Teacher Status</th>
-                                <th>Dean Status</th>
-                                <th>Teacher Remark</th>
-                                <th>Dean Remark</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {applications.map((app) => {
-                                const getStatusClass = (status) => {
-                                    switch (status) {
-                                        case "pending_teacher":
-                                        case "pending_dean":
-                                            return "bg-warning text-dark";
-                                        case "rejected_by_teacher":
-                                        case "rejected_by_dean":
-                                            return "bg-danger text-white";
-                                        case "approved":
-                                            return "bg-success text-white";
-                                        default:
-                                            return "";
-                                    }
-                                };
-                                return (
-                                    <tr key={app._id}>
-                                        <td>{app.subject}</td>
-                                        <td>{app.reason}</td>
-                                        <td>{new Date(app.fromDate).toLocaleDateString()}</td>
-                                        <td>{new Date(app.toDate).toLocaleDateString()}</td>
-                                        <td className="text-center"><p className={getStatusClass(app.teacherstatus)}>{app.teacherstatus}</p></td>
-                                        <td className="text-center"><p className={getStatusClass(app.deanstatus)}>{app.deanstatus}</p></td>
-                                        <td>{app.teacherRemark || "-"}</td>
-                                        <td>{app.deanRemark || "-"}</td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
+                    applications.map((app) => (
+                        <div className="col-md-6 mb-4" key={app._id}>
+                            <div className="card shadow-sm border-0 h-100">
+                                <div className="card-header bg-light">
+                                    <strong>
+                                        <i className="fa-solid fa-user-graduate me-2"></i>
+                                        {user.name}
+                                    </strong>
+                                    <span className="badge bg-secondary float-end">
+                                        PRN: {user.prn}
+                                    </span>
+                                </div>
+
+                                <div className="card-body" style={{ fontFamily: "serif" }}>
+
+                                    <p>
+                                        <b>To,</b>
+                                        <br />
+                                        The Dean of <b>{user.branch}</b> Department
+                                    </p>
+
+                                    <p className="mt-3">
+                                        <b>Subject:</b> {app.subject}
+                                    </p>
+
+                                    <p className="mt-3">Respected Sir/Madam,</p>
+
+                                    <p style={{ textAlign: "justify" }}>
+                                        I am <b>{user.name}</b> (PRN: <b>{user.prn}</b>), a
+                                        student of <b>{user.branch}</b> department. I would like to
+                                        request leave from{" "}
+                                        <b>{new Date(app.fromDate).toLocaleDateString()}</b> to{" "}
+                                        <b>{new Date(app.toDate).toLocaleDateString()}</b>.
+                                    </p>
+
+                                    <p className="mt-2">
+                                        <b>Reason:</b>
+                                        <br />
+                                        {app.reason}
+                                    </p>
+
+                                    <p className="mt-3">Thanking you.</p>
+
+                                    <p className="mt-3">
+                                        Yours sincerely,
+                                        <br />
+                                        <b>{user.name}</b>
+                                    </p>
+
+                                    {/* 🔹 Status Badges */}
+                                    <div className="mb-3">
+                                        <span className={getStatusBadge(app.teacherstatus)}>
+                                            Teacher: {app.teacherstatus.replace(/_/g, " ")}
+                                        </span>{" "}
+                                        <span className={getStatusBadge(app.deanstatus)}>
+                                            Dean: {app.deanstatus.replace(/_/g, " ")}
+                                        </span>
+                                    </div>
+                                    {/* Remarks Section */}
+                                    {(app.teacherRemark || app.deanRemark) && (
+                                        <div className="mt-4 p-3 border rounded bg-light">
+                                            <h6 className="mb-2">
+                                                <i className="fa-solid fa-pen-to-square me-2"></i>
+                                                Remarks
+                                            </h6>
+
+                                            {app.teacherRemark && (
+                                                <p className="mb-1">
+                                                    <b>Teacher:</b> {app.teacherRemark}
+                                                </p>
+                                            )}
+
+                                            {app.deanRemark && (
+                                                <p className="mb-0">
+                                                    <b>Dean:</b> {app.deanRemark}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))
                 )}
             </div>
         </div>
