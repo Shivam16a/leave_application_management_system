@@ -30,7 +30,7 @@ const ShowApplication = () => {
     try {
       await axios.post(
         `http://localhost:5500/api/staff/application/${appId}/approve`,
-        { staffId: user.staffId, remark: remarks[appId] || "" }
+        { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
       fetchApplications();
@@ -43,7 +43,7 @@ const ShowApplication = () => {
     try {
       await axios.post(
         `http://localhost:5500/api/staff/application/${appId}/reject`,
-        { staffId: user.staffId, remark: remarks[appId] || "" }
+        { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
       fetchApplications();

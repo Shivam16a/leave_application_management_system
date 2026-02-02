@@ -147,7 +147,7 @@ const Application = () => {
                 ) : (
                     applications.map((app) => (
                         <div className="col-md-6 mb-4" key={app._id}>
-                            <div className="card shadow-sm border-0 h-100">
+                            <div className="card shadow-sm h-100">
                                 <div className="card-header bg-light">
                                     <strong>
                                         <i className="fa-solid fa-user-graduate me-2"></i>
