@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const studenturl = "http://localhost:5500/api/user/login";
 const staffurl = "http://localhost:5500/api/staff/login";
@@ -42,11 +43,11 @@ const Login = () => {
         localStorage.setItem("role", "student");
       }
       console.log(res.data);
-      alert(`${role} login successful`);
+      toast.success(`${role} login successful`);
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Invalid credentials");
+      toast.error("Invalid credentials");
     }
   };
 
