@@ -10,7 +10,7 @@ const Navbar = () => {
     const { login } = useAuth();
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const navbackgroundcolor = (roles)=>{
+    const navbackgroundcolor = (roles) => {
         switch (roles) {
             case "student":
                 return "bg-primary";
@@ -23,7 +23,7 @@ const Navbar = () => {
         }
     };
 
-    const navTextcolor =(roles)=>{
+    const navTextcolor = (roles) => {
         switch (roles) {
             case "teacherapplicationchecker":
                 return "text-dark";
@@ -32,12 +32,12 @@ const Navbar = () => {
         }
     };
 
-    const btncolor=(roles)=>{
+    const btncolor = (roles) => {
         switch (roles) {
             case "teacherapplicationchecker":
                 return "btn-outline-dark";
             default:
-               return "btn-outline-light";
+                return "btn-outline-light";
         }
     }
 
@@ -88,7 +88,11 @@ const Navbar = () => {
                                 Hi 👋🏿 {user.role === "student" ? `${user.name}` : `${user.staffName}`}
                             </span>
                         </li>
-
+                        <li className='nav-item me-2'>
+                            <Link to="/about" className={`nav-link ${navTextcolor(user.role)} fw-semibold fs-5`}>
+                                About
+                            </Link>
+                        </li>
                         <li className="nav-item">
                             <button className={`btn ${btncolor(user.role)} btn-sm`} onClick={hadellogout}>
                                 Logout
@@ -99,8 +103,8 @@ const Navbar = () => {
             </div>
         </nav>
 
-        {user.role === "student" ? (<Application/>):(<ShowApplication/>)}
-        
+        {user.role === "student" ? (<Application />) : (<ShowApplication />)}
+
     </>
 }
 
