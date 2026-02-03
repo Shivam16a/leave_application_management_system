@@ -1,9 +1,19 @@
 import React from "react";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+    const navigate = useNavigate();
     return (
         <>
+            <div className="container my-3">
+                <button
+                    className="btn btn-outline-primary mb-3"
+                    onClick={() => navigate("/")}
+                >
+                    <i className="fa fa-home me-2"></i>Back to Home
+                </button>
+            </div>
             <div className="container my-5">
                 {/* Main About Card */}
                 <div
@@ -239,7 +249,7 @@ const About = () => {
                 </div>
 
             </div>
-            <Footer/>
+            <Footer />
         </>
     );
 };

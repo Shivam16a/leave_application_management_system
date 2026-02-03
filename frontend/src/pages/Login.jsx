@@ -26,7 +26,6 @@ const Login = () => {
     e.preventDefault();
 
     const url = role === "student" ? studenturl : staffurl;
-
     const payload =
       role === "student"
         ? { prn: formData.prn, password: formData.password }
@@ -34,22 +33,22 @@ const Login = () => {
 
     try {
       const res = await axios.post(url, payload);
-      if (role === "staff") {
-        localStorage.setItem("user", JSON.stringify(res.data.staff));
-      }
 
       if (role === "student") {
         localStorage.setItem("user", JSON.stringify(res.data.student));
         localStorage.setItem("role", "student");
+      } else {
+        localStorage.setItem("user", JSON.stringify(res.data.staff));
       }
-      console.log(res.data);
+
       toast.success(`${role} login successful`);
-      navigate("/");
+      setTimeout(() => navigate("/"), 100);
     } catch (err) {
       console.error(err);
       toast.error("Invalid credentials");
     }
   };
+
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">

@@ -89,8 +89,8 @@ const Navbar = () => {
                             </span>
                         </li>
                         <li className='nav-item me-2'>
-                            <Link to="/about" className={`nav-link ${navTextcolor(user.role)} fw-semibold fs-5`}>
-                                About
+                            <Link to="/about" className={`nav-link ${navTextcolor(user.role)} fw-semibold fs-5 hover-scale`}>
+                                About Us
                             </Link>
                         </li>
                         <li className="nav-item">
@@ -104,7 +104,18 @@ const Navbar = () => {
         </nav>
 
         {user.role === "student" ? (<Application />) : (<ShowApplication />)}
+        <style>
+            {`  
+                .hover-scale {
+                    transition: transform 0.3s ease, color 0.3s ease;
+                }
 
+                .hover-scale:hover {
+                    transform: scale(1.1) translateY(-2px);
+                    color: #ffd700; /* hover color */
+                }
+            `}
+        </style>
     </>
 }
 
