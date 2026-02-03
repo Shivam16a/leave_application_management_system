@@ -7,7 +7,7 @@ import ShowApplication from '../pages/ShowApplication';
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { logout } = useAuth();
     const user = JSON.parse(localStorage.getItem("user"));
 
     const navbackgroundcolor = (roles) => {
@@ -42,8 +42,7 @@ const Navbar = () => {
     }
 
     const hadellogout = () => {
-        localStorage.removeItem("user");
-        navigate("/login");
+        logout();
     }
     return <>
         <nav className={`navbar navbar-expand-lg ${navbackgroundcolor(user.role)}`}>

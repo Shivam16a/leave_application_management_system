@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { useAuth } from "../context/Authcontext";
+import { useEffect } from "react";
 
 const studenturl = "http://localhost:5500/api/user/login";
 const staffurl = "http://localhost:5500/api/staff/login";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
   const [role, setRole] = useState("student");
   const [formData, setFormData] = useState({
     prn: "",
@@ -35,20 +38,24 @@ const Login = () => {
       const res = await axios.post(url, payload);
 
       if (role === "student") {
+        login(res.data.student);
         localStorage.setItem("user", JSON.stringify(res.data.student));
         localStorage.setItem("role", "student");
       } else {
+        login(res.data.staff);
         localStorage.setItem("user", JSON.stringify(res.data.staff));
       }
 
       toast.success(`${role} login successful`);
-      setTimeout(() => navigate("/"), 100);
+
     } catch (err) {
       console.error(err);
       toast.error("Invalid credentials");
     }
   };
-
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
