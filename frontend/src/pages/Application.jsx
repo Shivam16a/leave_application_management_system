@@ -4,6 +4,7 @@ import axios from "axios";
 const Application = () => {
     const user = JSON.parse(localStorage.getItem("user")); // Logged-in student
     const [applications, setApplications] = useState([]);
+    const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
     const [formData, setFormData] = useState({
         subject: "",
         reason: "",
@@ -32,6 +33,25 @@ const Application = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+    //Allowed submit application
+    useEffect(() => {
+        const checkTime = () => {
+            const now = new Date();
+            const hour = now.getHours();
+
+            if (hour >= 9 && hour < 21) {
+                setIsSubmitAllowed(true);
+            } else {
+                setIsSubmitAllowed(false);
+            }
+        };
+
+        checkTime();
+
+        const interval = setInterval(checkTime, 60000);
+        return () => clearInterval(interval);
+    }, []);
+
 
     // 📤 Submit new application
     const handleSubmit = async (e) => {
@@ -91,6 +111,7 @@ const Application = () => {
                             type="text"
                             className="form-control"
                             name="subject"
+                            autoComplete="off"
                             value={formData.subject}
                             onChange={handleChange}
                             required
@@ -134,9 +155,14 @@ const Application = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" disabled={!isSubmitAllowed}>
                         Submit Application
                     </button>
+                    {!isSubmitAllowed && (
+                        <p className="text-denger mt-2">
+                            (You can submit applications only between 9:00 AM and 9:00 PM.)
+                        </p>
+                    )}
                 </form>
             </div>
 
