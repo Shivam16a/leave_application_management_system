@@ -159,7 +159,7 @@ const Application = () => {
           <button
             type="submit"
             className="btn btn-primary"
-          // disabled={!isSubmitAllowed}
+            disabled={!isSubmitAllowed}
           >
             Submit Application
           </button>
