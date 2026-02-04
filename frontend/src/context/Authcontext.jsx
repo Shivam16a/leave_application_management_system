@@ -1,52 +1,38 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // 🔁 Refresh ke baad localStorage se user uthao
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+  // ✅ initialize from localStorage (NO useEffect)
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+  const loading = false;
 
-    setLoading(false);
-  }, []);
-
-  // ✅ Login (sirf user store hoga)
   const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
   };
 
-  // 🚪 Logout
   const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem('user');
     setUser(null);
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        loading
-      }}
+      value={{ user, isAuthenticated: !!user, login, logout, loading }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

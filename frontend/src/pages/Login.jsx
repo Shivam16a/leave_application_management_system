@@ -55,7 +55,7 @@ const Login = () => {
   };
   useEffect(() => {
     if (user) navigate("/");
-  }, [user]);
+  }, [user,navigate]);
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">

@@ -8,23 +8,26 @@ const ShowApplication = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const fetchApplications = async () => {
-    try {
-      if (!user?.staffId) return;
-      const res = await axios.get(
-        `http://localhost:5500/api/staff/${user.staffId}/pending`
-      );
-      setApplications(res.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchApplications();
-  }, []);
+    // ✅ define an async function inside the effect
+    const loadApplications = async () => {
+      try {
+        if (!user?.staffId) return;
+
+        const res = await axios.get(
+          `http://localhost:5500/api/staff/${user.staffId}/pending`
+        );
+        setApplications(res.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadApplications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // empty dependency array is correct here
 
   const handleApprove = async (appId) => {
     try {
@@ -33,7 +36,12 @@ const ShowApplication = () => {
         { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
-      fetchApplications();
+
+      // Refresh the applications list after action
+      const res = await axios.get(
+        `http://localhost:5500/api/staff/${user.staffId}/pending`
+      );
+      setApplications(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -46,7 +54,12 @@ const ShowApplication = () => {
         { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
-      fetchApplications();
+
+      // Refresh the applications list after action
+      const res = await axios.get(
+        `http://localhost:5500/api/staff/${user.staffId}/pending`
+      );
+      setApplications(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -91,7 +104,8 @@ const ShowApplication = () => {
                 {/* Body */}
                 <div className="card-body" style={{ fontFamily: "serif" }}>
                   <p>
-                    <b>To,</b><br />
+                    <b>To,</b>
+                    <br />
                     The Dean of <b>{app.studentId?.branch}</b> Department
                   </p>
 
@@ -104,21 +118,23 @@ const ShowApplication = () => {
                   <p style={{ textAlign: "justify" }}>
                     I am <b>{app.studentId?.username}</b> (PRN:{" "}
                     <b>{app.studentId?.prn}</b>), a student of{" "}
-                    <b>{app.studentId?.branch}</b> department. I would like to request
-                    leave from{" "}
+                    <b>{app.studentId?.branch}</b> department. I would like to
+                    request leave from{" "}
                     <b>{new Date(app.fromDate).toLocaleDateString()}</b> to{" "}
                     <b>{new Date(app.toDate).toLocaleDateString()}</b>.
                   </p>
 
                   <p className="mt-2">
-                    <b>Reason:</b><br />
+                    <b>Reason:</b>
+                    <br />
                     {app.reason}
                   </p>
 
                   <p className="mt-3">Thanking you.</p>
 
                   <p className="mt-3">
-                    Yours sincerely,<br />
+                    Yours sincerely,
+                    <br />
                     <b>{app.studentId?.username}</b>
                   </p>
 
@@ -129,8 +145,16 @@ const ShowApplication = () => {
                         <i className="fa-solid fa-pen-to-square me-2"></i>
                         Remarks
                       </h6>
-                      {app.teacherRemark && <p><b>Teacher:</b> {app.teacherRemark}</p>}
-                      {app.deanRemark && <p><b>Dean:</b> {app.deanRemark}</p>}
+                      {app.teacherRemark && (
+                        <p>
+                          <b>Teacher:</b> {app.teacherRemark}
+                        </p>
+                      )}
+                      {app.deanRemark && (
+                        <p>
+                          <b>Dean:</b> {app.deanRemark}
+                        </p>
+                      )}
                     </div>
                   )}
 

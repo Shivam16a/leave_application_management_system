@@ -1,12 +1,11 @@
 import React from 'react'
 import { useAuth } from '../context/Authcontext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Application from '../pages/Application';
 import ShowApplication from '../pages/ShowApplication';
 
 
 const Navbar = () => {
-    const navigate = useNavigate();
     const { logout } = useAuth();
     const user = JSON.parse(localStorage.getItem("user"));
 
