@@ -8,7 +8,7 @@ const dotenv = require('dotenv');
 
 
 const corseOption = {
-    origin: 'http://localhost:5173',
+    origin: '*',
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
 };
