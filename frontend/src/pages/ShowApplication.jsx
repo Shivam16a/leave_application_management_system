@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/Authcontext";
 
 const ShowApplication = () => {
+  const { API } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [remarks, setRemarks] = useState({}); // store temporary remark for each application
@@ -15,7 +17,7 @@ const ShowApplication = () => {
         if (!user?.staffId) return;
 
         const res = await axios.get(
-          `http://localhost:5500/api/staff/${user.staffId}/pending`
+          `${API}/api/staff/${user.staffId}/pending`
         );
         setApplications(res.data);
       } catch (error) {
@@ -32,14 +34,14 @@ const ShowApplication = () => {
   const handleApprove = async (appId) => {
     try {
       await axios.post(
-        `http://localhost:5500/api/staff/application/${appId}/approve`,
+        `${API}/api/staff/application/${appId}/approve`,
         { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
 
       // Refresh the applications list after action
       const res = await axios.get(
-        `http://localhost:5500/api/staff/${user.staffId}/pending`
+        `${API}/api/staff/${user.staffId}/pending`
       );
       setApplications(res.data);
     } catch (err) {
@@ -50,14 +52,14 @@ const ShowApplication = () => {
   const handleReject = async (appId) => {
     try {
       await axios.post(
-        `http://localhost:5500/api/staff/application/${appId}/reject`,
+        `${API}/api/staff/application/${appId}/reject`,
         { staffId: user.staffmongoId, remark: remarks[appId] || "" }
       );
       setRemarks((prev) => ({ ...prev, [appId]: "" }));
 
       // Refresh the applications list after action
       const res = await axios.get(
-        `http://localhost:5500/api/staff/${user.staffId}/pending`
+        `${API}/api/staff/${user.staffId}/pending`
       );
       setApplications(res.data);
     } catch (err) {

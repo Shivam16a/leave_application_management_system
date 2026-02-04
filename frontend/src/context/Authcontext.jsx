@@ -7,6 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
+  const API = import.meta.env.VITE_API_URL;
   // ✅ initialize from localStorage (NO useEffect)
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user');

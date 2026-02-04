@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { useAuth } from "../context/Authcontext";
 
 const Application = () => {
   const user = JSON.parse(localStorage.getItem("user"));
+  const { API } = useAuth();
   const [applications, setApplications] = useState([]);
   const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,7 +22,7 @@ const Application = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5500/api/application/${user.studentId}`
+          `${API}/api/application/${user.studentId}`
         );
         setApplications(res.data);
       } catch (err) {
@@ -29,7 +31,7 @@ const Application = () => {
     };
 
     fetchData();
-  }, [user?.studentId]); // ✅ lint-clean
+  }, [user?.studentId, API]);
 
   // Allowed submit application (between 9 AM - 9 PM)
   useEffect(() => {
@@ -57,7 +59,7 @@ const Application = () => {
     }
 
     try {
-      await axios.post("http://localhost:5500/api/application/submit", {
+      await axios.post(`${API}/api/application/submit`, {
         studentId: user.studentId,
         subject,
         reason,
@@ -70,7 +72,7 @@ const Application = () => {
 
       // fetch applications again safely after submit
       const res = await axios.get(
-        `http://localhost:5500/api/application/${user.studentId}`
+        `${API}/api/application/${user.studentId}`
       );
       setApplications(res.data);
     } catch (err) {
@@ -79,7 +81,6 @@ const Application = () => {
     }
   };
 
-  // 🔹 Helper function for badge color
   const getStatusBadge = (status) => {
     switch (status) {
       case "pending_teacher":
@@ -158,7 +159,7 @@ const Application = () => {
           <button
             type="submit"
             className="btn btn-primary"
-            // disabled={!isSubmitAllowed}
+          // disabled={!isSubmitAllowed}
           >
             Submit Application
           </button>
@@ -175,7 +176,7 @@ const Application = () => {
         {applications.length === 0 ? (
           <p className="text-center">No applications submitted yet.</p>
         ) : (
-          [...applications].sort((a,b)=>new Date(b.fromDate)-new Date(a.toDate)).map((app) => (
+          [...applications].sort((a, b) => new Date(b.fromDate) - new Date(a.toDate)).map((app) => (
             <div className="col-md-6 mb-4" key={app._id}>
               <div className="card shadow-sm h-100">
                 <div className="card-header bg-light">

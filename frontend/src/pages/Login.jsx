@@ -5,13 +5,17 @@ import { toast } from 'react-toastify';
 import { useAuth } from "../context/Authcontext";
 import { useEffect } from "react";
 
-const studenturl = "http://localhost:5500/api/user/login";
-const staffurl = "http://localhost:5500/api/staff/login";
+//const { API } = useAuth();
+
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
+  const { login, user, API } = useAuth();
   const [role, setRole] = useState("student");
+
+  const studenturl = `${API}/api/user/login`;
+  const staffurl = `${API}/api/staff/login`;
+
   const [formData, setFormData] = useState({
     prn: "",
     staffId: "",
@@ -55,7 +59,7 @@ const Login = () => {
   };
   useEffect(() => {
     if (user) navigate("/");
-  }, [user,navigate]);
+  }, [user, navigate]);
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
