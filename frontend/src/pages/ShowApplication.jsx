@@ -11,59 +11,70 @@ const ShowApplication = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    // ✅ define an async function inside the effect
     const loadApplications = async () => {
       try {
         if (!user?.staffId) return;
 
-        const res = await axios.get(
-          `${API}/api/staff/${user.staffId}/pending`
-        );
-        setApplications(res.data);
+        const res = await axios.get(`${API}/api/staff/${user.staffId}/pending`);
+
+        // ✅ ensure applications is always an array
+        const apps = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+          ? res.data.data
+          : [];
+
+        setApplications(apps);
       } catch (error) {
-        console.error(error);
+        console.error("Error loading applications:", error);
+        setApplications([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadApplications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // empty dependency array is correct here
+  }, [API, user?.staffId]);
+
+  const refreshApplications = async () => {
+    try {
+      const res = await axios.get(`${API}/api/staff/${user.staffId}/pending`);
+      const apps = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.data)
+        ? res.data.data
+        : [];
+      setApplications(apps);
+    } catch (err) {
+      console.error("Error refreshing applications:", err);
+    }
+  };
 
   const handleApprove = async (appId) => {
     try {
-      await axios.post(
-        `${API}/api/staff/application/${appId}/approve`,
-        { staffId: user.staffmongoId, remark: remarks[appId] || "" }
-      );
-      setRemarks((prev) => ({ ...prev, [appId]: "" }));
+      await axios.post(`${API}/api/staff/application/${appId}/approve`, {
+        staffId: user.staffmongoId,
+        remark: remarks[appId] || "",
+      });
 
-      // Refresh the applications list after action
-      const res = await axios.get(
-        `${API}/api/staff/${user.staffId}/pending`
-      );
-      setApplications(res.data);
+      setRemarks((prev) => ({ ...prev, [appId]: "" }));
+      await refreshApplications();
     } catch (err) {
-      console.error(err);
+      console.error("Error approving application:", err);
     }
   };
 
   const handleReject = async (appId) => {
     try {
-      await axios.post(
-        `${API}/api/staff/application/${appId}/reject`,
-        { staffId: user.staffmongoId, remark: remarks[appId] || "" }
-      );
-      setRemarks((prev) => ({ ...prev, [appId]: "" }));
+      await axios.post(`${API}/api/staff/application/${appId}/reject`, {
+        staffId: user.staffmongoId,
+        remark: remarks[appId] || "",
+      });
 
-      // Refresh the applications list after action
-      const res = await axios.get(
-        `${API}/api/staff/${user.staffId}/pending`
-      );
-      setApplications(res.data);
+      setRemarks((prev) => ({ ...prev, [appId]: "" }));
+      await refreshApplications();
     } catch (err) {
-      console.error(err);
+      console.error("Error rejecting application:", err);
     }
   };
 
@@ -72,6 +83,13 @@ const ShowApplication = () => {
       <div className="text-center mt-5">
         <div className="spinner-border text-primary" role="status"></div>
         <p className="mt-2">Loading applications...</p>
+      </div>
+    );
+
+  if (!Array.isArray(applications))
+    return (
+      <div className="alert alert-danger text-center mt-4">
+        Invalid data received from the server.
       </div>
     );
 
@@ -84,8 +102,7 @@ const ShowApplication = () => {
 
       {applications.length === 0 ? (
         <div className="alert alert-info text-center">
-          <i className="fa-solid fa-circle-info me-2"></i>
-          No pending applications
+          <i className="fa-solid fa-circle-info me-2"></i>No pending applications
         </div>
       ) : (
         <div className="row">
@@ -144,19 +161,10 @@ const ShowApplication = () => {
                   {(app.teacherRemark || app.deanRemark) && (
                     <div className="mt-4 p-3 border rounded bg-light">
                       <h6 className="mb-2">
-                        <i className="fa-solid fa-pen-to-square me-2"></i>
-                        Remarks
+                        <i className="fa-solid fa-pen-to-square me-2"></i>Remarks
                       </h6>
-                      {app.teacherRemark && (
-                        <p>
-                          <b>Teacher:</b> {app.teacherRemark}
-                        </p>
-                      )}
-                      {app.deanRemark && (
-                        <p>
-                          <b>Dean:</b> {app.deanRemark}
-                        </p>
-                      )}
+                      {app.teacherRemark && <p><b>Teacher:</b> {app.teacherRemark}</p>}
+                      {app.deanRemark && <p><b>Dean:</b> {app.deanRemark}</p>}
                     </div>
                   )}
 
@@ -165,7 +173,7 @@ const ShowApplication = () => {
                     <input
                       type="text"
                       className="form-control form-control-sm fw-bold fs-4"
-                      placeholder="Enter remark:(eg:- Approve for a day)"
+                      placeholder="Enter remark (e.g. Approve for a day)"
                       value={remarks[app._id] || ""}
                       onChange={(e) =>
                         setRemarks((prev) => ({ ...prev, [app._id]: e.target.value }))
