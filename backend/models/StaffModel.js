@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const staffSchema = new mongoose.Schema(
     {
@@ -21,7 +21,7 @@ const staffSchema = new mongoose.Schema(
 
         role: {
             type: String,
-            enum: ["staff","teacherapplicationchecker", "dean"],
+            enum: ['staff','teacherapplicationchecker', 'dean'],
             required: true,
         },
 
@@ -39,4 +39,4 @@ const staffSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("Staff", staffSchema);
+module.exports = mongoose.model('Staff', staffSchema);

@@ -1,14 +1,14 @@
-const Application = require("../models/ApplicationModel.js");
+const Application = require('../models/ApplicationModel.js');
 
 // Submit new application
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 exports.submitApplication = async (req, res) => {
     try {
         const { studentId, subject, reason, fromDate, toDate } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(studentId)) {
-            return res.status(400).json({ message: "Invalid studentId" });
+            return res.status(400).json({ message: 'Invalid studentId' });
         }
 
         const newApp = new Application({
@@ -20,7 +20,7 @@ exports.submitApplication = async (req, res) => {
         });
 
         await newApp.save();
-        res.status(201).json({ message: "Application submitted successfully", application: newApp });
+        res.status(201).json({ message: 'Application submitted successfully', application: newApp });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: err.message });

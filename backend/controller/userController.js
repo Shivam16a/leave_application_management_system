@@ -1,6 +1,6 @@
-const User = require("../models/UsersModel.js");
-const Application = require("../models/ApplicationModel.js");
-const bcrypt = require("bcryptjs");
+const User = require('../models/UsersModel.js');
+const Application = require('../models/ApplicationModel.js');
+const bcrypt = require('bcryptjs');
 
 // register student
 exports.registerStudent = async (req, res) => {
@@ -17,7 +17,7 @@ exports.registerStudent = async (req, res) => {
 
         const existingStudent = await User.findOne({ prn });
         if (existingStudent) {
-            return res.status(400).json({ message: "Student already registered" });
+            return res.status(400).json({ message: 'Student already registered' });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -34,7 +34,7 @@ exports.registerStudent = async (req, res) => {
         });
 
         res.status(201).json({
-            message: "Registration successful",
+            message: 'Registration successful',
             student,
         });
     } catch (err) {
@@ -48,15 +48,15 @@ exports.loginStudent = async (req, res) => {
     const { prn, password } = req.body;
     try {
         const student = await User.findOne({ prn });
-        if (!student) return res.status(400).json({ message: "Invalid credentials" });
+        if (!student) return res.status(400).json({ message: 'Invalid credentials' });
 
         const isMatch = await bcrypt.compare(password, student.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         res.status(200).json({
-            message: "Login successful",
+            message: 'Login successful',
             student:{
                 studentId:student._id,
                 name:student.username,

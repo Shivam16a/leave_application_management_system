@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const applicationSchema = new mongoose.Schema(
   {
     studentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
 
@@ -31,33 +31,33 @@ const applicationSchema = new mongoose.Schema(
     teacherstatus: {
       type: String,
       enum: [
-        "pending_teacher",
-        "rejected_by_teacher",
-        "approved"
+        'pending_teacher',
+        'rejected_by_teacher',
+        'approved'
       ],
-      default: "pending_teacher",
+      default: 'pending_teacher',
     },
     deanstatus: {
       type:String,
       enum:[
-        "pending_dean",
-        "rejected_by_dean",
-        "approved"
+        'pending_dean',
+        'rejected_by_dean',
+        'approved'
       ],
-      default:"pending_dean"
+      default:'pending_dean'
     },
 
     teacherRemark: {
       type: String,
-      default: "",
+      default: '',
     },
 
     deanRemark: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Application", applicationSchema);
+module.exports = mongoose.model('Application', applicationSchema);
