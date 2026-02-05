@@ -111,8 +111,7 @@ const About = () => {
 
                                     <div className="mt-3 social-links">
                                         <a
-                                            href="https://www.instagram.com/silent_life_2004/"
-                                            target="_blank"
+                                            href="#"
                                             rel="noreferrer"
                                             className="me-3 instagram fs-5"
                                         >
@@ -160,8 +159,7 @@ const About = () => {
 
                                     <div className="mt-3 social-links">
                                         <a
-                                            href="https://www.instagram.com/silent_life_2004/"
-                                            target="_blank"
+                                            href="#"
                                             rel="noreferrer"
                                             className="me-3 instagram fs-5"
                                         >

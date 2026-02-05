@@ -172,7 +172,7 @@ const ShowApplication = () => {
                   <div className="mt-3">
                     <input
                       type="text"
-                      className="form-control form-control-sm fw-bold fs-4"
+                      className="form-control form-control-sm fw-bold fs-5"
                       placeholder="Enter remark (e.g. Approve for a day)"
                       value={remarks[app._id] || ""}
                       onChange={(e) =>

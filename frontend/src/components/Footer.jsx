@@ -41,9 +41,7 @@ const Footer = () => {
                         <a href="#" className={`${footerText(user?.role)} me-3 fs-5`}>
                             <i className="fab fa-facebook"></i>
                         </a>
-                        <a href="https://www.instagram.com/silent_life_2004/" className={`${footerText(user?.role)} me-3 fs-5`}>
-                            <i className="fab fa-instagram"></i>
-                        </a>
+                        
                         <a href="#" className={`${footerText(user?.role)} me-3 fs-5`}>
                             <i className="fab fa-linkedin"></i>
                         </a>

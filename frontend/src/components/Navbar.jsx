@@ -62,22 +62,31 @@ const Navbar = () => {
 
                 <div className="collapse navbar-collapse" id="navbarContent">
                     {/* Small screen search */}
-                    <form className="d-flex d-lg-none my-2">
-                        <input className="form-control me-2 rounded-pill" type="search" placeholder="Search..." />
-                        <button className="btn btn-outline-light rounded-pill" type="submit">Search</button>
-                    </form>
-                    {/* Center: Search (ONLY centered on large screens) */}
-                    <form className="d-none d-lg-flex position-absolute start-50 translate-middle-x">
-                        <input
-                            className="form-control me-1 rounded-pill"
-                            type="search"
-                            placeholder="Search..."
-                            style={{ width: "350px" }}
-                        />
-                        <button className="btn btn-outline-light rounded-pill" type="submit">
-                            Search
-                        </button>
-                    </form>
+                    {user.role === "student" ? (
+                        <>
+
+                        </>
+                    ) : (
+                        <>
+                            <form className="d-flex d-lg-none my-2">
+                                <input className="form-control me-2 rounded-pill" type="search" placeholder="Search..." />
+                                <button className="btn btn-outline-light rounded-pill" type="submit">Search</button>
+                            </form>
+                            {/* Center: Search (ONLY centered on large screens) */}
+                            <form className="d-none d-lg-flex position-absolute start-50 translate-middle-x">
+                                <input
+                                    className="form-control me-1 rounded-pill"
+                                    type="search"
+                                    placeholder="Search..."
+                                    style={{ width: "350px" }}
+                                />
+                                <button className="btn btn-outline-light rounded-pill" type="submit">
+                                    Search
+                                </button>
+                            </form>
+                        </>
+                    )}
+
 
                     {/* Right: User */}
                     <ul className="navbar-nav ms-lg-auto align-items-lg-center">
