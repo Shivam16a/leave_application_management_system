@@ -7,6 +7,7 @@ const Application = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const { API } = useAuth();
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isSubmitAllowed, setIsSubmitAllowed] = useState(false);
   const [formData, setFormData] = useState({
     subject: "",
@@ -21,12 +22,15 @@ const Application = () => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await axios.get(
           `${API}/api/application/${user.studentId}`
         );
         setApplications(res.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -59,6 +63,7 @@ const Application = () => {
     }
 
     try {
+      setLoading(true);
       await axios.post(`${API}/api/application/submit`, {
         studentId: user.studentId,
         subject,
@@ -78,6 +83,8 @@ const Application = () => {
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,90 +179,98 @@ const Application = () => {
       </div>
 
       {/* 📄 Applications in Letter Format */}
-      <div className="row">
-        {applications.length === 0 ? (
-          <p className="text-center">No applications submitted yet.</p>
-        ) : (
-          [...applications].sort((a, b) => new Date(b.fromDate) - new Date(a.toDate)).map((app) => (
-            <div className="col-md-6 mb-4" key={app._id}>
-              <div className="card shadow-sm h-100">
-                <div className="card-header bg-light">
-                  <strong>
-                    <i className="fa-solid fa-user-graduate me-2"></i>
-                    {user.name}
-                  </strong>
-                  <span className="badge bg-secondary float-end">
-                    PRN: {user.prn}
-                  </span>
-                </div>
-
-                <div className="card-body" style={{ fontFamily: "serif" }}>
-                  <p>
-                    <b>To,</b>
-                    <br />
-                    The Dean of <b>{user.branch}</b> Department
-                  </p>
-
-                  <p className="mt-3">
-                    <b>Subject:</b> {app.subject}
-                  </p>
-
-                  <p className="mt-3">Respected Sir/Madam,</p>
-
-                  <p style={{ textAlign: "justify" }}>
-                    I am <b>{user.name}</b> (PRN: <b>{user.prn}</b>), a student of{" "}
-                    <b>{user.branch}</b> department. I would like to request leave from{" "}
-                    <b>{new Date(app.fromDate).toLocaleDateString()}</b> to{" "}
-                    <b>{new Date(app.toDate).toLocaleDateString()}</b>.
-                  </p>
-
-                  <p className="mt-2">
-                    <b>Reason:</b>
-                    <br />
-                    {app.reason}
-                  </p>
-
-                  <p className="mt-3">Thanking you.</p>
-
-                  <p className="mt-3">
-                    Yours sincerely,
-                    <br />
-                    <b>{user.name}</b>
-                  </p>
-
-                  <div className="mb-3">
-                    <span className={getStatusBadge(app.teacherstatus)}>
-                      Teacher: {app.teacherstatus.replace(/_/g, " ")}
-                    </span>{" "}
-                    <span className={getStatusBadge(app.deanstatus)}>
-                      Dean: {app.deanstatus.replace(/_/g, " ")}
+      {loading ? (
+        <div className="text-center mt-5">
+          <div className="spinner-border text-primary" role="status"></div>
+          <p className="mt-2">Loading applications...</p>
+        </div>
+      ) : (
+        <div className="row">
+          {applications.length === 0 ? (
+            <p className="text-center">No applications submitted yet.</p>
+          ) : (
+            [...applications].sort((a, b) => new Date(b.fromDate) - new Date(a.toDate)).map((app) => (
+              <div className="col-md-6 mb-4" key={app._id}>
+                <div className="card shadow-sm h-100">
+                  <div className="card-header bg-light">
+                    <strong>
+                      <i className="fa-solid fa-user-graduate me-2"></i>
+                      {user.name}
+                    </strong>
+                    <span className="badge bg-secondary float-end">
+                      PRN: {user.prn}
                     </span>
                   </div>
 
-                  {(app.teacherRemark || app.deanRemark) && (
-                    <div className="mt-4 p-3 border rounded bg-light">
-                      <h6 className="mb-2">
-                        <i className="fa-solid fa-pen-to-square me-2"></i>
-                        Remarks
-                      </h6>
-                      {app.teacherRemark && (
-                        <p className="mb-1">
-                          <b>Teacher:</b> {app.teacherRemark}
-                        </p>
-                      )}
-                      {app.deanRemark && (
-                        <p className="mb-0">
-                          <b>Dean:</b> {app.deanRemark}
-                        </p>
-                      )}
+                  <div className="card-body" style={{ fontFamily: "serif" }}>
+                    <p>
+                      <b>To,</b>
+                      <br />
+                      The Dean of <b>{user.branch}</b> Department
+                    </p>
+
+                    <p className="mt-3">
+                      <b>Subject:</b> {app.subject}
+                    </p>
+
+                    <p className="mt-3">Respected Sir/Madam,</p>
+
+                    <p style={{ textAlign: "justify" }}>
+                      I am <b>{user.name}</b> (PRN: <b>{user.prn}</b>), a student of{" "}
+                      <b>{user.branch}</b> department. I would like to request leave from{" "}
+                      <b>{new Date(app.fromDate).toLocaleDateString()}</b> to{" "}
+                      <b>{new Date(app.toDate).toLocaleDateString()}</b>.
+                    </p>
+
+                    <p className="mt-2">
+                      <b>Reason:</b>
+                      <br />
+                      {app.reason}
+                    </p>
+
+                    <p className="mt-3">Thanking you.</p>
+
+                    <p className="mt-3">
+                      Yours sincerely,
+                      <br />
+                      <b>{user.name}</b>
+                    </p>
+
+                    <div className="mb-3">
+                      <span className={getStatusBadge(app.teacherstatus)}>
+                        Teacher: {app.teacherstatus.replace(/_/g, " ")}
+                      </span>{" "}
+                      <span className={getStatusBadge(app.deanstatus)}>
+                        Dean: {app.deanstatus.replace(/_/g, " ")}
+                      </span>
                     </div>
-                  )}
+
+                    {(app.teacherRemark || app.deanRemark) && (
+                      <div className="mt-4 p-3 border rounded bg-light">
+                        <h6 className="mb-2">
+                          <i className="fa-solid fa-pen-to-square me-2"></i>
+                          Remarks
+                        </h6>
+                        {app.teacherRemark && (
+                          <p className="mb-1">
+                            <b>Teacher:</b> {app.teacherRemark}
+                          </p>
+                        )}
+                        {app.deanRemark && (
+                          <p className="mb-0">
+                            <b>Dean:</b> {app.deanRemark}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      )}
+
     </div>
   );
 };
